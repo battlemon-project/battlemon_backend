@@ -1,5 +1,4 @@
-use battlemon_backend::config;
-use battlemon_backend::startup::App;
+use battlemon_backend::{config, startup::App};
 use reqwest::{Client, Response};
 
 pub struct TestApp {
