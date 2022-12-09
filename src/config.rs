@@ -1,12 +1,13 @@
 use color_eyre::eyre::{eyre, Context, Result};
 use color_eyre::Report;
 use serde::Deserialize;
+use sqlx::postgres::PgConnectOptions;
 use std::str::FromStr;
 
 #[derive(Deserialize, Clone, Debug)]
 pub struct Config {
     pub app: AppConfig,
-    // pub db: DatabaseConfig,
+    pub db: DatabaseConfig,
 }
 
 #[derive(Deserialize, Clone, Debug)]
@@ -21,7 +22,21 @@ pub struct DatabaseConfig {
     pub port: u16,
     pub username: String,
     pub password: String,
-    pub database_name: String,
+    pub db_name: String,
+}
+
+impl DatabaseConfig {
+    pub fn without_db(&self) -> PgConnectOptions {
+        PgConnectOptions::new()
+            .host(&self.host)
+            .username(&self.username)
+            .password(&self.password)
+            .port(self.port)
+    }
+
+    pub fn with_db(&self) -> PgConnectOptions {
+        self.without_db().database(&self.db_name)
+    }
 }
 
 pub fn load_config() -> Result<Config> {
