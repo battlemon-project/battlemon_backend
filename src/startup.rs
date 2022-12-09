@@ -1,6 +1,5 @@
 use crate::config::{Config, DatabaseConfig};
 use crate::graphql::QueryRoot;
-use crate::routes;
 use crate::routes::{setup_router, AppState, BattlemonSchema};
 use async_graphql::{EmptyMutation, EmptySubscription, Schema};
 use axum::routing::IntoMakeService;
