@@ -9,7 +9,6 @@ use hyper::server::conn::AddrIncoming;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::net::TcpListener;
-use std::sync::Arc;
 
 type HyperServer = Server<AddrIncoming, IntoMakeService<Router>>;
 
@@ -71,7 +70,7 @@ pub fn get_db_pool(config: &DatabaseConfig) -> PgPool {
 }
 
 pub fn get_graphql_schema(db_pool: &PgPool) -> BattlemonSchema {
-    let db_pool = Arc::new(db_pool.clone());
+    let db_pool = db_pool.clone();
     Schema::build(QueryRoot, EmptyMutation, EmptySubscription)
         .data(db_pool)
         .finish()
