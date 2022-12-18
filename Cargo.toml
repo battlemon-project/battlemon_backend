@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 # async runtime
-tokio = { version = "1.22.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.23.0", features = ["macros", "rt-multi-thread"] }
 # server
 axum = { version = "0.6.1", features = ["http2", "ws"] }
 hyper = { version = "0.14.23", features = ["server"] }
