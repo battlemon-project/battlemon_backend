@@ -29,6 +29,7 @@ impl FromRef<AppState> for BattlemonSchema {
 pub fn setup_router(state: AppState) -> Router {
     Router::new()
         .route("/healthcheck", get(healthcheck))
+        .route("/graphql", post(graphql_handler))
         .route("/graphql/playground",get(graphql_playground).post(graphql_handler))
         .with_state(state)
 }
