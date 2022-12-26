@@ -1,14 +1,17 @@
 use crate::config::{Config, DatabaseConfig};
-use crate::graphql::QueryRoot;
+use crate::graphql::{MutationRoot, QueryRoot};
 use crate::routes::{setup_router, AppState, BattlemonSchema};
-use async_graphql::{EmptyMutation, EmptySubscription, Schema};
+use anyhow::{Context, Result};
+use async_graphql::{EmptySubscription, Schema};
 use axum::routing::IntoMakeService;
 use axum::{Router, Server};
-use color_eyre::eyre::{Context, Result};
 use hyper::server::conn::AddrIncoming;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::net::TcpListener;
+use tokio::fs::File;
+use tokio::io::AsyncWriteExt;
+use tracing::info;
 
 type HyperServer = Server<AddrIncoming, IntoMakeService<Router>>;
 
@@ -29,7 +32,11 @@ impl App {
         let port = listener.local_addr()?.port();
 
         tracing::info!("Compose GraphQL Schema");
-        let graphql_schema = get_graphql_schema(&db_pool);
+        let graphql_schema = build_graphql_schema(&db_pool);
+        tracing::info!("Export GraphQL Schema into SDL");
+        save_sdl_to_file(&graphql_schema)
+            .await
+            .context("Failed to save GraphQL Schema to file")?;
         let server =
             setup_server(listener, db_pool, graphql_schema).context("Failed to setup server")?;
 
@@ -69,9 +76,24 @@ pub fn get_db_pool(config: &DatabaseConfig) -> PgPool {
         .connect_lazy_with(config.with_db())
 }
 
-pub fn get_graphql_schema(db_pool: &PgPool) -> BattlemonSchema {
+pub fn build_graphql_schema(db_pool: &PgPool) -> BattlemonSchema {
     let db_pool = db_pool.clone();
-    Schema::build(QueryRoot, EmptyMutation, EmptySubscription)
+    Schema::build(QueryRoot, MutationRoot, EmptySubscription)
         .data(db_pool)
         .finish()
+}
+
+async fn save_sdl_to_file(schema: &BattlemonSchema) -> Result<()> {
+    let path = std::env::current_dir()
+        .context("Failed to determine the current directory")?
+        .parent()
+        .context("Failed to get parent directory")?
+        .join("indexer/schema.graphql");
+
+    let mut file = File::create(path).await.context("Failed to create file.")?;
+    file.write_all(schema.sdl().as_bytes())
+        .await
+        .context("Failed to write data with graphql schema in file.")?;
+
+    Ok(())
 }

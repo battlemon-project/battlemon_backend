@@ -1,7 +1,6 @@
+use anyhow::{Context, Result};
 use battlemon_backend::startup::App;
 use battlemon_backend::{config, telemetry};
-use color_eyre::eyre::Context;
-use color_eyre::Result;
 use tracing::info;
 
 #[tokio::main]

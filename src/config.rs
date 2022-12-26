@@ -1,5 +1,4 @@
-use color_eyre::eyre::{eyre, Context, Result};
-use color_eyre::Report;
+use anyhow::{anyhow, Context, Error, Result};
 use serde::Deserialize;
 use sqlx::postgres::PgConnectOptions;
 use std::str::FromStr;
@@ -44,10 +43,10 @@ pub fn load_config() -> Result<Config> {
         .context("Failed to determine the current directory")?
         .join("config");
 
-    let env: Environment = std::env::var("APP_ENVIRONMENT")
+    let env: Environment = std::env::var("APP_ENV")
         .unwrap_or_else(|_| "local".into())
         .parse()
-        .context("Failed to parse APP_ENVIRONMENT")?;
+        .context("Failed to parse APP_ENV")?;
 
     let env_filename = format!("{}.toml", env.as_str());
     let config = config::Config::builder()
@@ -82,13 +81,13 @@ impl Environment {
 }
 
 impl FromStr for Environment {
-    type Err = Report;
+    type Err = Error;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         match s {
             "local" => Ok(Environment::Local),
             "production" => Ok(Environment::Production),
-            other => Err(eyre!(
+            other => Err(anyhow!(
                 "{} is not a supported environment. Use either `local` or `production`",
                 other
             )),

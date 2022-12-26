@@ -1,7 +1,7 @@
-use crate::graphql::QueryRoot;
-use async_graphql::{EmptyMutation, EmptySubscription, Schema};
+use crate::graphql::{MutationRoot, QueryRoot};
+use async_graphql::{EmptySubscription, Schema};
 use axum::extract::FromRef;
-use axum::routing::get;
+use axum::routing::{get, post};
 use axum::Router;
 use graphql::*;
 use healthcheck::*;
@@ -10,7 +10,7 @@ use sqlx::PgPool;
 mod graphql;
 mod healthcheck;
 
-pub type BattlemonSchema = Schema<QueryRoot, EmptyMutation, EmptySubscription>;
+pub type BattlemonSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
 #[derive(Clone)]
 pub struct AppState {

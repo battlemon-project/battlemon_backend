@@ -1,4 +1,4 @@
-use color_eyre::eyre::{Context, Result};
+use anyhow::{Context, Result};
 use tokio::task::JoinHandle;
 use tracing::{subscriber, Subscriber};
 use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
