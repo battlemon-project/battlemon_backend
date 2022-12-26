@@ -3,6 +3,13 @@ name = "battlemon_backend"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = "battlemon_backend"
+
 [dependencies]
 # async runtime
 tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }
@@ -11,7 +18,7 @@ axum = { version = "0.6.1", features = ["http2", "ws"] }
 hyper = { version = "0.14.23", features = ["server"] }
 # error handling
 anyhow = "1.0.67"
-thiserror = "1.0.37"
+thiserror = "1.0.38"
 # logging
 tracing = "0.1.37"
 tracing-subscriber = { version = "0.3.15", features = ["registry", "env-filter"] }
