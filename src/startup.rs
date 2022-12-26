@@ -23,17 +23,17 @@ pub struct App {
 impl App {
     #[tracing::instrument(name = "Building application", skip_all)]
     pub async fn build(config: Config) -> Result<App> {
-        tracing::info!("Connect to Postgres");
+        info!("Connect to Postgres");
         let db_pool = get_db_pool(&config.db);
         let app_addr = format!("{}:{}", config.app.host, config.app.port);
 
-        tracing::info!("Binding address - {app_addr} for app");
+        info!("Binding address - {app_addr} for app");
         let listener = TcpListener::bind(&app_addr).context("Failed to bind address for app")?;
         let port = listener.local_addr()?.port();
 
-        tracing::info!("Compose GraphQL Schema");
+        info!("Compose GraphQL Schema");
         let graphql_schema = build_graphql_schema(&db_pool);
-        tracing::info!("Export GraphQL Schema into SDL");
+        info!("Export GraphQL Schema into SDL");
         save_sdl_to_file(&graphql_schema)
             .await
             .context("Failed to save GraphQL Schema to file")?;
