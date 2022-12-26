@@ -17,7 +17,7 @@ ENV SQLX_OFFLINE=true
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
-RUN cargo build --release --bin battlemon_rest
+RUN cargo build --release --bin battlemon_backend
 
 FROM debian:bullseye-20221219-slim AS runtime
 WORKDIR /app
@@ -29,7 +29,7 @@ RUN apt-get update -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/target/release/backend /app/scripts/* ./
+COPY --from=builder /app/target/release/battlemon_backend /app/scripts/* ./
 COPY config ./config
 
 RUN chmod +x entry_point.sh
