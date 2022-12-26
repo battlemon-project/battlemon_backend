@@ -17,7 +17,7 @@ fi
 
 DB_USER=${POSTGRES_USER:=postgres}
 DB_PASSWORD="${POSTGRES_PASSWORD:=password}"
-DB_NAME="${POSTGRES_DB:=battlemon}"
+DB_NAME="${POSTGRES_DB:=battlemon_db}"
 DB_PORT="${POSTGRES_PORT:=5432}"
 
 if [[ -z "${SKIP_DOCKER}" ]]; then
