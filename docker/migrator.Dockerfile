@@ -7,7 +7,7 @@ RUN apt update -y \
     pkg-config \
     openssl \
     postgresql-client \
-    && cargo install --version=0.5.7 sqlx-cli --no-default-features --features postgres \
+    && cargo install --version=0.6.2 sqlx-cli --no-default-features --features postgres \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
