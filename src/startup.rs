@@ -33,10 +33,6 @@ impl App {
 
         info!("Compose GraphQL Schema");
         let graphql_schema = build_graphql_schema(&db_pool);
-        info!("Export GraphQL Schema into SDL");
-        save_sdl_to_file(&graphql_schema)
-            .await
-            .context("Failed to save GraphQL Schema to file")?;
         let server =
             setup_server(listener, db_pool, graphql_schema).context("Failed to setup server")?;
 
@@ -81,19 +77,4 @@ pub fn build_graphql_schema(db_pool: &PgPool) -> BattlemonSchema {
     Schema::build(QueryRoot, MutationRoot, EmptySubscription)
         .data(db_pool)
         .finish()
-}
-
-async fn save_sdl_to_file(schema: &BattlemonSchema) -> Result<()> {
-    let path = std::env::current_dir()
-        .context("Failed to determine the current directory")?
-        .parent()
-        .context("Failed to get parent directory")?
-        .join("indexer/schema.graphql");
-
-    let mut file = File::create(path).await.context("Failed to create file.")?;
-    file.write_all(schema.sdl().as_bytes())
-        .await
-        .context("Failed to write data with graphql schema in file.")?;
-
-    Ok(())
 }
