@@ -7,14 +7,14 @@ RUN apt update -y \
     pkg-config \
     openssl \
     postgresql-client \
-    && cargo install --version=0.6.2 sqlx-cli --no-default-features --features postgres \
+    && cargo install --version=0.6.2 sqlx-cli --no-default-features --features native-tls,postgres \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY ./migrations ./migrations
-COPY ./scripts/init_db_cluster.sh ./
+COPY ./scripts/init_db_compose.sh ./
 
-RUN chmod +x init_db_cluster.sh
+RUN chmod +x init_db_compose.sh
 
-ENTRYPOINT ["./init_db_cluster.sh"]
+ENTRYPOINT ["./init_db_compose.sh"]
